@@ -13,7 +13,7 @@ const Review: React.FC<{ review: ReviewModel }> = (props) => {
   return (
     <div>
       <div className="col-sm-8 col-md-8">
-        <h5>{props.review.user_email}</h5>
+        <h5>{props.review.userEmail}</h5>
         <div className="row">
           <div className="col">{dateRender}</div>
           <div className="col">
