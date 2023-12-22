@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import BookModel from "../../../models/BookModel";
+import { useOktaAuth } from "@okta/okta-react";
 
-const ChangeQuantityOfBook: React.FC<{ book: BookModel }> = (props, key) => {
+const ChangeQuantityOfBook: React.FC<{ book: BookModel; deleteBook: any }> = (
+  props,
+  key
+) => {
+  const { authState } = useOktaAuth();
+
   const [quantity, setQuantity] = useState<number>(0);
   const [remaining, setRemaining] = useState<number>(0);
 
@@ -14,6 +20,63 @@ const ChangeQuantityOfBook: React.FC<{ book: BookModel }> = (props, key) => {
     };
     fetchBookInState();
   }, []);
+
+  async function increaseQuantity() {
+    const url = `http://localhost:8080/api/admin/secure/increase/book/quantity?bookId=${props.book.id}`;
+    if (authState && authState?.isAuthenticated) {
+      const requestOptions = {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      };
+      const returnResponse = await fetch(url, requestOptions);
+      if (!returnResponse.ok) {
+        throw new Error("Something went wrong");
+      }
+      setQuantity(quantity + 1);
+      setRemaining(remaining + 1);
+    }
+  }
+
+  async function decreaseQuantity() {
+    const url = `http://localhost:8080/api/admin/secure/decrease/book/quantity?bookId=${props.book.id}`;
+    if (authState && authState?.isAuthenticated) {
+      const requestOptions = {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      };
+      const returnResponse = await fetch(url, requestOptions);
+      if (!returnResponse.ok) {
+        throw new Error("Something went wrong");
+      }
+      setQuantity(quantity - 1);
+      setRemaining(remaining - 1);
+    }
+  }
+
+  async function deleteBook() {
+    const url = `http://localhost:8080/api/admin/secure/delete/book?bookId=${props.book.id}`;
+    if (authState && authState?.isAuthenticated) {
+      const requestOptions = {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authState?.accessToken?.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      };
+      const returnResponse = await fetch(url, requestOptions);
+      if (!returnResponse.ok) {
+        throw new Error("Something went wrong");
+      }
+      props.deleteBook();
+    }
+  }
+
   return (
     <div className="card mt-3 shadow p-3 mb-3 bg-body rounded">
       <div className="row g-0">
@@ -74,13 +137,23 @@ const ChangeQuantityOfBook: React.FC<{ book: BookModel }> = (props, key) => {
         </div>
         <div className="mt-3 col-md-1">
           <div className="d-flex justify-content-start">
-            <button className="m-1 btn btn-md btn-danger">Delete</button>
+            <button onClick={deleteBook} className="m-1 btn btn-md btn-danger">
+              Delete
+            </button>
           </div>
         </div>
-        <button className="m1 btn btn-md main-color text-white">
+        <button
+          onClick={increaseQuantity}
+          className="m1 btn btn-md main-color text-white"
+        >
           Add Quantity
         </button>
-        <button className="m1 btn btn-md btn-warning">Decrease Quantity</button>
+        <button
+          onClick={decreaseQuantity}
+          className="m1 btn btn-md btn-warning"
+        >
+          Decrease Quantity
+        </button>
       </div>
     </div>
   );
