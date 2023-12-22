@@ -19,7 +19,9 @@ const ReviewListPage = () => {
 
   useEffect(() => {
     const fetchBookReviews = async () => {
-      const reviewUrl: string = `http://localhost:8080/api/reviews/search/findReviewByBookId?bookId=${bookId}&pages=${
+      const reviewUrl: string = `${
+        process.env.REACT_APP_API
+      }/reviews/search/findReviewByBookId?bookId=${bookId}&pages=${
         currentPage - 1
       }&size=${booksPerPage}`;
 
