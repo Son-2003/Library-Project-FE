@@ -4,13 +4,21 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe(
+  "pk_test_51OQNfEL191zKf1JE3lIo1i77FZgfSaFzXPA3hGo8R1R7uWrIZTou1kPXGJiG07fPoRUYXernjhWXni72UEVSzTga00pI747PQk"
+);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <BrowserRouter>
-    <App />
+    <Elements stripe={stripePromise}>
+      <App />
+    </Elements>
   </BrowserRouter>
 );
 
